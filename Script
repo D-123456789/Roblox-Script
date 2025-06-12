@@ -116,25 +116,3 @@ Button4.MouseButton1Click:Connect(function()
 		end
 	end)
 end)
-
--- Close Button
-local CloseButton = createButton(Frame, UDim2.new(0.8, 0, 0.01, 0), UDim2.new(0.18, 0, 0.15, 0), "X", "White")
-CloseButton.TextScaled = true
-CloseButton.TextColor3 = Color3.new(1, 0, 0)
-CloseButton.MouseButton1Click:Connect(function()
-	Frame.Visible = false
-end)
-
--- Open Button (shows after close)
-local OpenButton = Instance.new("TextButton", GUI)
-OpenButton.Size = UDim2.new(0, 80, 0, 40)
-OpenButton.Position = UDim2.new(0, 10, 0, 10)
-OpenButton.Text = "Menu"
-OpenButton.TextScaled = true
-OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.Visible = false
-Instance.new("UICorner", OpenButton)
-
-OpenButton.MouseButton1Click:Connect(function()
-	Fr
