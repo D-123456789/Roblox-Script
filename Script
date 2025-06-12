@@ -1,77 +1,84 @@
+-- Place this in a LocalScript inside StarterPlayerScripts or StarterGui
+
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+
+-- Create GUI
 local GUI = Instance.new("ScreenGui")
 GUI.Parent = player:WaitForChild("PlayerGui")
 GUI.ResetOnSpawn = false
-local Frame = Instance.new("Frame", GUI)
-Frame.Position = UDim2.new(0,0,0)
-Frame.Size = UDim2.new(0.3,0,0.3,0)
+
+-- Main frame
+local Frame = Instance.new("Frame")
+Frame.Parent = GUI
+Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+Frame.Size = UDim2.new(0.4, 0, 0.4, 0)
 Frame.Visible = true
 Frame.Active = true
 Frame.Draggable = true
-Frame.BorderSizePixel = "3"
+Frame.BorderSizePixel = 3
 Frame.ClipsDescendants = true
-local Title = Instance.new("TextLabel", Frame)
-Title.Position = UDim2.new(0,0,0,0)
-Title.BackgroundTransparency = "0"
-Title.BackgroundColor3 = Color3.new(0.498039, 0.498039, 0.498039)
-Title.Size = UDim2.new(1,0,0.2,0)
-Title.Text = "UnderMade Menu"
-Title.BorderSizePixel = "3"
-Title.TextScaled = true
-Title.TextColor = BrickColor.new("Ghost grey")
+
+-- Styling
 local Edge = Instance.new("UICorner", Frame)
 local EdgeStroke = Instance.new("UIStroke", Frame)
-EdgeStroke.Thickness = "3"
+EdgeStroke.Thickness = 3
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Parent = Frame
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Size = UDim2.new(1, 0, 0.2, 0)
+Title.BackgroundTransparency = 0
+Title.BackgroundColor3 = Color3.new(0.498, 0.498, 0.498)
+Title.BorderSizePixel = 3
+Title.Text = "UnderMade Menu"
+Title.TextScaled = true
+Title.TextColor3 = BrickColor.new("Ghost grey").Color
+
 local SubEdge = Instance.new("UICorner", Title)
 local SubEdgeStroke = Instance.new("UIStroke", Title)
-SubEdgeStroke.Thickness = "3"
+SubEdgeStroke.Thickness = 3
 SubEdgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-local RemoteEvent = Instance.new("RemoteEvent")
-RemoteEvent.Parent = game.ReplicatedStorage
-RemoteEvent.Name = "Test"
-local Button = Instance.new("TextButton", Frame)
-Button.Parent = Frame
-Button.BackgroundColor = BrickColor.new("Black")
-Button.Active = true
-local SubButtonEdge = Instance.new("UICorner", Button)
-local SubButtonEdgeStroke = Instance.new("UIStroke", Button)
-SubButtonEdgeStroke.Thickness = "3"
-SubButtonEdgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-Button.Position = UDim2.new(0.03,0,0.3,0)
-Button.Size = UDim2.new(0.4,0,0.2,0)
-Button.Text = "Walkspeed = 100"
-Button.TextColor = BrickColor.new("White")
-local ButtonScript = Instance.new("Script")
-ButtonScript.Parent = game.ServerScriptService
-ButtonScript.Name = "Test2"
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-Button.TouchTap:Connect(function()
-	print(player.Name)
+-- Button 1 - Walkspeed
+local Button = Instance.new("TextButton")
+Button.Parent = Frame
+Button.Position = UDim2.new(0.05, 0, 0.25, 0)
+Button.Size = UDim2.new(0.4, 0, 0.2, 0)
+Button.BackgroundColor3 = BrickColor.new("Black").Color
+Button.TextColor3 = BrickColor.new("White").Color
+Button.Text = "Walkspeed = 100"
+Button.TextScaled = true
+local Corner = Instance.new("UICorner", Button)
+local Stroke = Instance.new("UIStroke", Button)
+Stroke.Thickness = 3
+Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+Button.MouseButton1Click:Connect(function()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then
 		humanoid.WalkSpeed = 100
 	end
 end)
-local Button2 = Instance.new("TextButton", Frame)
-Button2.Size = UDim2.new(0.4,0,0.2,0)
-Button2.Position = UDim2.new(0.5,0,0.3,0)
-Button2.BackgroundColor = BrickColor.new("Black")
-Button2.Text = "super Jump"
-Button2.TextColor = BrickColor.new("Ghost grey")
-Button2.TextScaled = true
-Button2.Active = true
-local Subpar_Button2Edge = Instance.new("UICorner", Button2)
-local Subpar_Button2EdgeStroke = Instance.new("UIStroke", Button2)
-Subpar_Button2EdgeStroke.Thickness = "3"
-Subpar_Button2EdgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-Button2.TouchTap:Connect(function()
-	print(player.Name)
+-- Button 2 - Jump Power
+local Button2 = Instance.new("TextButton")
+Button2.Parent = Frame
+Button2.Position = UDim2.new(0.55, 0, 0.25, 0)
+Button2.Size = UDim2.new(0.4, 0, 0.2, 0)
+Button2.BackgroundColor3 = BrickColor.new("Black").Color
+Button2.Text = "Super Jump"
+Button2.TextColor3 = BrickColor.new("Ghost grey").Color
+Button2.TextScaled = true
+local Corner2 = Instance.new("UICorner", Button2)
+local Stroke2 = Instance.new("UIStroke", Button2)
+Stroke2.Thickness = 3
+Stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+Button2.MouseButton1Click:Connect(function()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then
@@ -79,20 +86,21 @@ Button2.TouchTap:Connect(function()
 	end
 end)
 
-local Button3 = Instance.new("TextButton", Frame)
-Button3.Size = UDim2.new(0.4,0,0.2,0)
-Button3.Position = UDim2.new(0.03,0,0.6,0)
-Button3.BackgroundColor = BrickColor.new("Black")
+-- Button 3 - GodMode
+local Button3 = Instance.new("TextButton")
+Button3.Parent = Frame
+Button3.Position = UDim2.new(0.05, 0, 0.55, 0)
+Button3.Size = UDim2.new(0.4, 0, 0.2, 0)
+Button3.BackgroundColor3 = BrickColor.new("Black").Color
 Button3.Text = "GodMode"
 Button3.TextScaled = true
-Button3.TextColor = BrickColor.new("Ghost grey")
-Button3.Active = true
-local Subpar_Button3Edge = Instance.new("UICorner", Button3)
-local SubPar_Button3EdgeStroke = Instance.new("UIStroke", Button3)
-SubPar_Button3EdgeStroke.Thickness = "3"
-SubPar_Button3EdgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-Button3.TouchTap:Connect(function()
-	print(player.Name)
+Button3.TextColor3 = BrickColor.new("Ghost grey").Color
+local Corner3 = Instance.new("UICorner", Button3)
+local Stroke3 = Instance.new("UIStroke", Button3)
+Stroke3.Thickness = 3
+Stroke3.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+Button3.MouseButton1Click:Connect(function()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then
@@ -101,52 +109,39 @@ Button3.TouchTap:Connect(function()
 	end
 end)
 
-local Button4 = Instance.new("TextButton", Frame)
-Button4.Size = UDim2.new(0.4,0,0.2,0)
-Button4.Position = UDim2.new(0.5,0,0.6,0)
-Button4.BackgroundColor = BrickColor.new("Black")
-local Yedge = Instance.new("UICorner", Button4)
-local Yegdestroke = Instance.new("UIStroke", Button4)
-Yegdestroke.Thickness = "3"
-Yegdestroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+-- Button 4 - Noclip (except floor)
+local Button4 = Instance.new("TextButton")
+Button4.Parent = Frame
+Button4.Position = UDim2.new(0.55, 0, 0.55, 0)
+Button4.Size = UDim2.new(0.4, 0, 0.2, 0)
+Button4.BackgroundColor3 = BrickColor.new("Black").Color
 Button4.Text = "Noclip"
 Button4.TextScaled = true
-Button4.TextColor = BrickColor.new("Ghost grey")
+Button4.TextColor3 = BrickColor.new("Ghost grey").Color
+local Corner4 = Instance.new("UICorner", Button4)
+local Stroke4 = Instance.new("UIStroke", Button4)
+Stroke4.Thickness = 3
+Stroke4.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-Button4.TouchTap:Connect(function()
-	local Players = game:GetService("Players")
+Button4.MouseButton1Click:Connect(function()
 	local RunService = game:GetService("RunService")
-
-	local player = Players.LocalPlayer
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
-
-	-- Keeps track of parts we've modified
 	local modifiedParts = {}
 
 	RunService.RenderStepped:Connect(function()
 		if not character or not hrp then return end
 
-		-- Raycast downward to find the floor
-		local rayOrigin = hrp.Position
-		local rayDirection = Vector3.new(0, -5, 0) -- Short ray below the player
-
-		local raycastParams = RaycastParams.new()
-		raycastParams.FilterDescendantsInstances = {character}
-		raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-
-		local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+		local rayResult = workspace:Raycast(hrp.Position, Vector3.new(0, -5, 0), RaycastParams.new())
 		local floorPart = rayResult and rayResult.Instance or nil
 
-		-- Reset previously modified parts
-		for part, originalState in pairs(modifiedParts) do
+		for part, original in pairs(modifiedParts) do
 			if part and part:IsA("BasePart") then
-				part.CanCollide = originalState
+				part.CanCollide = original
 			end
 		end
 		modifiedParts = {}
 
-		-- Check for touching parts
 		for _, part in pairs(workspace:GetPartBoundsInBox(hrp.CFrame, hrp.Size + Vector3.new(2,2,2))) do
 			if part:IsA("BasePart") and part.CanCollide and not part:IsDescendantOf(character) and part ~= floorPart then
 				modifiedParts[part] = part.CanCollide
@@ -154,5 +149,4 @@ Button4.TouchTap:Connect(function()
 			end
 		end
 	end)
-
 end)
