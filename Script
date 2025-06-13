@@ -87,27 +87,35 @@ Button3.MouseButton1Click:Connect(function()
 	teleportFrame.Parent = Frame
 	teleportFrame.Active = true
 	teleportFrame.Draggable = true
-	local players = game:GetService("Players"):GetPlayers()
-	for i, targetPlayer in players do
-		local teleportButton = Instance.new("TextButton")
-		teleportButton.Size = UDim2.new(1, 0, 0.1, 0)
-		teleportButton.Position = UDim2.new(0, 0, i * 0.01, 0)
-		teleportButton.Text = targetPlayer.Name
-		teleportButton.Parent = teleportFrame
 
-		teleportButton.MouseButton1Click:Connect(function()
-			local char = player.Character or player.CharacterAdded:Wait()
-			local targetChar = targetPlayer.Character
-			if targetChar then
-				local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
-				if targetHRP then
-					char:PivotTo(targetHRP.CFrame)
+	local function updateTeleportMenu()
+		teleportFrame:ClearAllChildren()
+		local players = game:GetService("Players"):GetPlayers()
+		for i, targetPlayer in players do
+			local teleportButton = Instance.new("TextButton")
+			teleportButton.Size = UDim2.new(1, 0, 0.1, 0)
+			teleportButton.Position = UDim2.new(0, 0, i * 0.1, 0)
+			teleportButton.Text = targetPlayer.Name
+			teleportButton.Parent = teleportFrame
+
+			teleportButton.MouseButton1Click:Connect(function()
+				local char = player.Character or player.CharacterAdded:Wait()
+				local targetChar = targetPlayer.Character
+				if targetChar then
+					local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						char:PivotTo(targetHRP.CFrame)
+					end
 				end
-			end
-		end)
+			end)
+		end
+		teleportFrame.CanvasSize = UDim2.new(0, 0, #players * 0.1, 0)
 	end
-end)
 
+	updateTeleportMenu()
+	Players.PlayerAdded:Connect(updateTeleportMenu)
+	Players.PlayerRemoving:Connect(updateTeleportMenu)
+end)
 
 -- Noclip
 local Button4 = createButton(Frame, UDim2.new(0.5, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "Noclip", "Ghost grey")
@@ -241,3 +249,4 @@ FlyButton.MouseButton1Click:Connect(function()
 		end
 	end
 end)
+
