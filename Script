@@ -18,7 +18,6 @@ Frame.Visible = true
 Frame.Active = true
 Frame.Draggable = true
 Frame.BorderSizePixel = 3
-Frame.ClipsDescendants = true
 
 -- Title
 local Title = Instance.new("TextLabel", Frame)
@@ -77,15 +76,38 @@ Button2.MouseButton1Click:Connect(function()
 	end
 end)
 
-local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "GodMode", "Ghost grey")
+local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "Teleport Menu", "Ghost grey")
 Button3.MouseButton1Click:Connect(function()
-	local char = player.Character or player.CharacterAdded:Wait()
-	local humanoid = char:FindFirstChild("Humanoid")
-	if humanoid then
-		humanoid.MaxHealth = math.huge
-		humanoid.Health = math.huge
+	local teleportFrame = Instance.new("ScrollingFrame")
+	teleportFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
+	teleportFrame.Position = UDim2.new(0.03, 0, 1.1, 0)
+	local tpUIedge = Instance.new("UIStroke", teleportFrame)
+	tpUIedge.Thickness = 3
+	tpUIedge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	teleportFrame.Parent = Frame
+	teleportFrame.Active = true
+	teleportFrame.Draggable = true
+	local players = game:GetService("Players"):GetPlayers()
+	for i, targetPlayer in players do
+		local teleportButton = Instance.new("TextButton")
+		teleportButton.Size = UDim2.new(1, 0, 0.1, 0)
+		teleportButton.Position = UDim2.new(0, 0, i * 0.01, 0)
+		teleportButton.Text = targetPlayer.Name
+		teleportButton.Parent = teleportFrame
+
+		teleportButton.MouseButton1Click:Connect(function()
+			local char = player.Character or player.CharacterAdded:Wait()
+			local targetChar = targetPlayer.Character
+			if targetChar then
+				local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+				if targetHRP then
+					char:PivotTo(targetHRP.CFrame)
+				end
+			end
+		end)
 	end
 end)
+
 
 -- Noclip
 local Button4 = createButton(Frame, UDim2.new(0.5, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "Noclip", "Ghost grey")
@@ -161,7 +183,7 @@ local function flyOnMobile()
 		{"U", UDim2.new(0.82, 0, 0.3, 0)},
 		{"D", UDim2.new(0.82, 0, 0.7, 0)},
 	}
-	
+
 	for _, dir in directions do
 		local key, pos = dir[1], dir[2]
 		local b = Instance.new("TextButton", Frame)
@@ -219,4 +241,3 @@ FlyButton.MouseButton1Click:Connect(function()
 		end
 	end
 end)
-
