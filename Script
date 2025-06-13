@@ -78,7 +78,7 @@ end)
 
 local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "Teleport Menu", "Ghost grey")
 Button3.MouseButton1Click:Connect(function()
-	local teleportFrame = Instance.new("ScrollingFrame")
+	local teleportFrame = Instance.new("Frame")
 	teleportFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
 	teleportFrame.Position = UDim2.new(0.03, 0, 1.1, 0)
 	local tpUIedge = Instance.new("UIStroke", teleportFrame)
@@ -109,7 +109,6 @@ Button3.MouseButton1Click:Connect(function()
 				end
 			end)
 		end
-		teleportFrame.CanvasSize = UDim2.new(0, 0, #players * 0.1, 0)
 	end
 
 	updateTeleportMenu()
