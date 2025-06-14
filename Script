@@ -80,22 +80,30 @@ end)
 local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "uhh", "Ghost grey")
 Button3.MouseButton1Click:Connect(function()
 	local teleportActive = false
-	teleportActive = not teleportActive
-	Button3.Text = teleportActive and "Turn Off" or "Turn On"
+teleportActive = not teleportActive
+Button3.Text = teleportActive and "Turn Off" or "Turn On"
 
-	if teleportActive then
-		local player = game.Players.LocalPlayer
-		local mouse = player:GetMouse()
-		local char = player.Character or player.CharacterAdded:Wait()
-		local hrp = char:WaitForChild("HumanoidRootPart")
+local player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local mouse = player:GetMouse()
 
-		mouse.Button1Down:Connect(function()
-			if teleportActive then
-				local targetPosition = mouse.Hit.p
-				hrp.CFrame = CFrame.new(targetPosition + Vector3.new(0, 3, 0)) -- Offset to avoid clipping into the ground
-			end
-		end)
-	end
+if teleportActive then
+	UIS.InputBegan:Connect(function(input, gameProcessed)
+		if teleportActive and not gameProcessed then
+			-- Only trigger teleport if it's a screen tap (Touch or Mouse) and not from movement or jump
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				-- Prevent teleport if user is pressing the jump button
+				local humanoid = char:FindFirstChildOfClass("Humanoid")
+				if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
+					return -- Don't teleport if jumping
+				end
+
+				local targetPosition
+				if input.UserInputType == Enum.UserInputType.Touch then
+					local to
+
 end)
 
 -- Noclip
