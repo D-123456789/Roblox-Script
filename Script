@@ -72,7 +72,7 @@ local Button2 = createButton(Frame, UDim2.new(0.5, 0, 0.3, 0), UDim2.new(0.4, 0,
 Button2.MouseButton1Click:Connect(function()
 	local teleportActive = false
 teleportActive = not teleportActive
-Button3.Text = teleportActive and "Turn Off" or "Turn On"
+Button2.Text = teleportActive and "Turn Off" or "Turn On"
 
 local UIS = game:GetService("UserInputService")
 local player = game.Players.LocalPlayer
