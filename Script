@@ -1,10 +1,12 @@
+UnderMadeMenu
+
 -- Services
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-
+-- working
 -- GUI
 local GUI = Instance.new("ScreenGui")
 GUI.Parent = player:WaitForChild("PlayerGui")
@@ -18,7 +20,6 @@ Frame.Visible = true
 Frame.Active = true
 Frame.Draggable = true
 Frame.BorderSizePixel = 3
-Frame.ClipsDescendants = true
 
 -- Title
 local Title = Instance.new("TextLabel", Frame)
@@ -77,33 +78,45 @@ Button2.MouseButton1Click:Connect(function()
 	end
 end)
 
-local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "uhh", "Ghost grey")
+local Button3 = createButton(Frame, UDim2.new(0.03, 0, 0.6, 0), UDim2.new(0.4, 0, 0.2, 0), "Teleport Menu", "Ghost grey")
 Button3.MouseButton1Click:Connect(function()
-	local teleportActive = false
-teleportActive = not teleportActive
-Button3.Text = teleportActive and "Turn Off" or "Turn On"
+	local teleportFrame = Instance.new("ScrollingFrame")
+	teleportFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
+	teleportFrame.Position = UDim2.new(0.03, 0, 1.1, 0)
+	local tpUIedge = Instance.new("UIStroke", teleportFrame)
+	tpUIedge.Thickness = 3
+	tpUIedge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	teleportFrame.Parent = Frame
+	teleportFrame.Active = true
+	teleportFrame.Draggable = true
 
-local player = game.Players.LocalPlayer
-local UIS = game:GetService("UserInputService")
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-local mouse = player:GetMouse()
+	local function updateTeleportMenu()
+		teleportFrame:ClearAllChildren()
+		local players = game:GetService("Players"):GetPlayers()
+		for i, targetPlayer in players do
+			local teleportButton = Instance.new("TextButton")
+			teleportButton.Size = UDim2.new(1, 0, 0.1, 0)
+			teleportButton.Position = UDim2.new(0, 0, i * 0.1, 0)
+			teleportButton.Text = targetPlayer.Name
+			teleportButton.Parent = teleportFrame
 
-if teleportActive then
-	UIS.InputBegan:Connect(function(input, gameProcessed)
-		if teleportActive and not gameProcessed then
-			-- Only trigger teleport if it's a screen tap (Touch or Mouse) and not from movement or jump
-			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-				-- Prevent teleport if user is pressing the jump button
-				local humanoid = char:FindFirstChildOfClass("Humanoid")
-				if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
-					return -- Don't teleport if jumping
+			teleportButton.MouseButton1Click:Connect(function()
+				local char = player.Character or player.CharacterAdded:Wait()
+				local targetChar = targetPlayer.Character
+				if targetChar then
+					local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						char:PivotTo(targetHRP.CFrame)
+					end
 				end
+			end)
+		end
+		teleportFrame.CanvasSize = UDim2.new(0, 0, #players * 0.1, 0)
+	end
 
-				local targetPosition
-				if input.UserInputType == Enum.UserInputType.Touch then
-					local to
-
+	updateTeleportMenu()
+	Players.PlayerAdded:Connect(updateTeleportMenu)
+	Players.PlayerRemoving:Connect(updateTeleportMenu)
 end)
 
 -- Noclip
@@ -180,7 +193,7 @@ local function flyOnMobile()
 		{"U", UDim2.new(0.82, 0, 0.3, 0)},
 		{"D", UDim2.new(0.82, 0, 0.7, 0)},
 	}
-	
+
 	for _, dir in directions do
 		local key, pos = dir[1], dir[2]
 		local b = Instance.new("TextButton", Frame)
@@ -238,4 +251,3 @@ FlyButton.MouseButton1Click:Connect(function()
 		end
 	end
 end)
-
