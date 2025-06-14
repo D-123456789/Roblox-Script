@@ -72,7 +72,7 @@ local Button2 = createButton(Frame, UDim2.new(0.5, 0, 0.3, 0), UDim2.new(0.4, 0,
 Button2.MouseButton1Click:Connect(function()
 	local teleportActive = false
 teleportActive = not teleportActive
-Button2.Text = teleportActive and "Turn Off" or "Turn On"
+Button3.Text = teleportActive and "Turn Off" or "Turn On"
 
 local UIS = game:GetService("UserInputService")
 local player = game.Players.LocalPlayer
@@ -80,7 +80,6 @@ local camera = workspace.CurrentCamera
 local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- Tracking touch info
 local activeTouches = {}
 local multiTouchDetected = false
 local TOUCH_MOVE_THRESHOLD = 5
@@ -93,7 +92,7 @@ if teleportActive then
 				Moved = false,
 			}
 
-			-- More than 1 touch? Mark as multi-touch (pinch, swipe, etc.)
+			-- Mark as multitouch if there's more than one finger
 			if table.getn(activeTouches) > 1 then
 				multiTouchDetected = true
 			end
@@ -114,19 +113,21 @@ if teleportActive then
 			local data = activeTouches[input]
 			activeTouches[input] = nil
 
-			-- If other touches still exist, cancel this tap
-			if next(activeTouches) ~= nil or multiTouchDetected or not data or data.Moved then
+			-- Only cancel *this* teleport if:
+			-- - multitouch detected
+			-- - the finger moved
+			if not data or data.Moved or multiTouchDetected then
+				-- Reset multitouch flag ONLY when all touches are released
 				if next(activeTouches) == nil then
-					multiTouchDetected = false -- Reset only when all fingers are lifted
+					multiTouchDetected = false
 				end
-				return -- Cancel teleport
+				return -- cancel this teleport, but keep teleport mode on
 			end
 
-			-- Valid single-tap, check if jumping
+			-- Do teleport
 			local humanoid = char:FindFirstChildOfClass("Humanoid")
 			if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then return end
 
-			-- Teleport
 			local ray = camera:ScreenPointToRay(input.Position.X, input.Position.Y)
 			local raycastParams = RaycastParams.new()
 			raycastParams.FilterDescendantsInstances = {char}
@@ -138,8 +139,10 @@ if teleportActive then
 				hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
 			end
 
-			-- Reset state
-			multiTouchDetected = false
+			-- Reset multitouch flag if this was last touch
+			if next(activeTouches) == nil then
+				multiTouchDetected = false
+			end
 		end
 	end)
 end
