@@ -78,40 +78,52 @@ Button2.MouseButton1Click:Connect(function()
 	local UIS = game:GetService("UserInputService")
 	local char = player.Character or player.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
-	local mouse = player:GetMouse()
+	local camera = workspace.CurrentCamera
+
+	local touchStartPos = nil
+	local touchMoved = false
+	local TOUCH_MOVE_THRESHOLD = 5 -- pixels, max distance to still count as a tap
 
 	if teleportActive then
 		UIS.InputBegan:Connect(function(input, gameProcessed)
-			if teleportActive and not gameProcessed then
-				-- Only trigger teleport if it's a screen tap (Touch or Mouse) and not from movement or jump
-				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-					-- Prevent teleport if user is pressing the jump button
+			if input.UserInputType == Enum.UserInputType.Touch and not gameProcessed then
+				touchStartPos = input.Position
+				touchMoved = false
+			end
+		end)
+
+		UIS.InputChanged:Connect(function(input, gameProcessed)
+			if input.UserInputType == Enum.UserInputType.Touch and touchStartPos then
+				-- If finger moved too much, it's a drag or zoom gesture
+				if (input.Position - touchStartPos).Magnitude > TOUCH_MOVE_THRESHOLD then
+					touchMoved = true
+				end
+			end
+		end)
+
+		UIS.InputEnded:Connect(function(input, gameProcessed)
+			if teleportActive and input.UserInputType == Enum.UserInputType.Touch and not gameProcessed then
+				if not touchMoved then
+					-- Treat as valid tap
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
 					if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
-						return -- Don't teleport if jumping
+						return
 					end
 
-					local targetPosition
-					if input.UserInputType == Enum.UserInputType.Touch then
-						local touchPosition = input.Position
-						local camera = workspace.CurrentCamera
-						local ray = camera:ScreenPointToRay(touchPosition.X, touchPosition.Y)
-						local raycastParams = RaycastParams.new()
-						raycastParams.FilterDescendantsInstances = {char}
-						raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-						local result = workspace:Raycast(ray.Origin, ray.Direction * 500, raycastParams)
+					local inputPos = input.Position
+					local ray = camera:ScreenPointToRay(inputPos.X, inputPos.Y)
+					local raycastParams = RaycastParams.new()
+					raycastParams.FilterDescendantsInstances = {char}
+					raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
-						if result then
-							targetPosition = result.Position
-						end
-					else
-						targetPosition = mouse.Hit and mouse.Hit.p or nil
-					end
-
-					if targetPosition then
-						hrp.CFrame = CFrame.new(targetPosition + Vector3.new(0, 3, 0))
+					local result = workspace:Raycast(ray.Origin, ray.Direction * 500, raycastParams)
+					if result then
+						local targetPos = result.Position
+						hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
 					end
 				end
+				touchStartPos = nil
+				touchMoved = false
 			end
 		end)
 	end
