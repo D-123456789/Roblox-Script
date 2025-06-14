@@ -72,7 +72,7 @@ local Button2 = createButton(Frame, UDim2.new(0.5, 0, 0.3, 0), UDim2.new(0.4, 0,
 Button2.MouseButton1Click:Connect(function()
 	local teleportActive = false
 	teleportActive = not teleportActive
-	Button2.Text = teleportActive and "Turn Off" or "Turn On"
+	Button2.Text = teleportActive and "CTTP is on fr"
 
 	local player = game.Players.LocalPlayer
 	local UIS = game:GetService("UserInputService")
@@ -80,35 +80,53 @@ Button2.MouseButton1Click:Connect(function()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	local camera = workspace.CurrentCamera
 
-	local touchStartPos = nil
-	local touchMoved = false
-	local TOUCH_MOVE_THRESHOLD = 5 -- pixels, max distance to still count as a tap
+	local touchStartPositions = {}
+	local touchMoved = {}
+	local multiTouchDetected = false
+	local TOUCH_MOVE_THRESHOLD = 5 -- pixels
 
+	-- Reset when toggle is off
 	if teleportActive then
 		UIS.InputBegan:Connect(function(input, gameProcessed)
 			if input.UserInputType == Enum.UserInputType.Touch and not gameProcessed then
-				touchStartPos = input.Position
-				touchMoved = false
+				local id = input.UserInputState
+				local touchId = input.TouchId or input.Position -- fallback
+				touchStartPositions[touchId] = input.Position
+				touchMoved[touchId] = false
+
+				-- If more than 1 touch is currently active, mark it as multitouch
+				if #UIS:GetTouchPoints() > 1 then
+					multiTouchDetected = true
+				end
 			end
 		end)
 
 		UIS.InputChanged:Connect(function(input, gameProcessed)
-			if input.UserInputType == Enum.UserInputType.Touch and touchStartPos then
-				-- If finger moved too much, it's a drag or zoom gesture
-				if (input.Position - touchStartPos).Magnitude > TOUCH_MOVE_THRESHOLD then
-					touchMoved = true
+			if input.UserInputType == Enum.UserInputType.Touch then
+				local touchId = input.TouchId or input.Position
+				if touchStartPositions[touchId] then
+					if (input.Position - touchStartPositions[touchId]).Magnitude > TOUCH_MOVE_THRESHOLD then
+						touchMoved[touchId] = true
+					end
 				end
 			end
 		end)
 
 		UIS.InputEnded:Connect(function(input, gameProcessed)
 			if teleportActive and input.UserInputType == Enum.UserInputType.Touch and not gameProcessed then
-				if not touchMoved then
-					-- Treat as valid tap
+				local touchId = input.TouchId or input.Position
+
+				local moved = touchMoved[touchId]
+				touchStartPositions[touchId] = nil
+				touchMoved[touchId] = nil
+
+				-- Only allow teleport if:
+				-- 1. Only one finger was involved
+				-- 2. That finger didn't move
+				-- 3. No multitouch occurred during the tap
+				if not moved and not multiTouchDetected and next(touchStartPositions) == nil then
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
-					if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
-						return
-					end
+					if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then return end
 
 					local inputPos = input.Position
 					local ray = camera:ScreenPointToRay(inputPos.X, inputPos.Y)
@@ -122,8 +140,11 @@ Button2.MouseButton1Click:Connect(function()
 						hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
 					end
 				end
-				touchStartPos = nil
-				touchMoved = false
+
+				-- Reset multitouch flag only after last touch ends
+				if next(touchStartPositions) == nil then
+					multiTouchDetected = false
+				end
 			end
 		end)
 	end
